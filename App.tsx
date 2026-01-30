@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { 
-  LayoutDashboard, ShoppingCart, Package, BarChart3, Settings as SettingsIcon, Sun, Moon, IdCard, LogOut, Clock as ClockIcon, FileText, Search, ArrowRight, Users, ChevronLeft, ChevronRight, UserPlus, LogIn, Key, ShieldCheck, ChevronDown, ArrowRightLeft, Bell, X, Check, Trash2, BellOff, Info, AlertTriangle, CheckCircle, Maximize, Minimize, Calendar as CalendarIcon, Shield, UtensilsCrossed, ChefHat, Wifi, Sparkles, Wallet, Trash, Clock
+  LayoutDashboard, ShoppingCart, Package, BarChart3, Settings as SettingsIcon, Sun, Moon, IdCard, LogOut, Clock as ClockIcon, FileText, Search, ArrowRight, Users, ChevronLeft, ChevronRight, UserPlus, LogIn, Key, ShieldCheck, ChevronDown, ArrowRightLeft, Bell, X, Check, Trash2, BellOff, Info, AlertTriangle, CheckCircle, Maximize, Minimize, Calendar as CalendarIcon, Shield, UtensilsCrossed, ChefHat, Wifi, Sparkles, Wallet, Trash, Clock, Command
 } from 'lucide-react';
 import { ViewType, Product, SaleOrder, Employee, ERPConfig, AttendanceRecord, User, CashSession, Expense, Customer, UserRole, AppNotification, RolePermission, POSLocations } from './types';
 import { INITIAL_PRODUCTS, INITIAL_EMPLOYEES, INITIAL_CONFIG, APP_USERS, INITIAL_CUSTOMERS, POS_LOCATIONS as INITIAL_LOCATIONS } from './constants';
@@ -99,6 +99,9 @@ const App: React.FC = () => {
   const [loginIdentifier, setLoginIdentifier] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [loginError, setLoginError] = useState(false);
+
+  // État pour la recherche globale
+  const [globalSearchTerm, setGlobalSearchTerm] = useState('');
 
   const [signupName, setSignupName] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
@@ -443,7 +446,7 @@ const App: React.FC = () => {
         <header className="h-24 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-8 z-10 animate-entryHeader">
           <div className="flex items-center space-x-6">
             {/* HORLOGE ET DATE (HAUT À GAUCHE) */}
-            <div className="flex items-center space-x-4 bg-slate-50 dark:bg-slate-800/50 px-5 py-2.5 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-inner group transition-all hover:bg-white dark:hover:bg-slate-800">
+            <div className="flex items-center space-x-4 bg-slate-50 dark:bg-slate-800/50 px-5 py-2.5 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-inner group transition-all hover:bg-white dark:hover:bg-slate-800 shrink-0">
                <div className="p-2 bg-purple-600 text-white rounded-xl shadow-lg animate-pulse-subtle">
                   <Clock size={18} />
                </div>
@@ -453,14 +456,33 @@ const App: React.FC = () => {
                </div>
             </div>
             
-            <div className="h-10 w-px bg-slate-100 dark:bg-slate-800"></div>
+            <div className="h-10 w-px bg-slate-100 dark:bg-slate-800 shrink-0"></div>
 
-            <div className="flex flex-col">
+            <div className="flex flex-col shrink-0">
               <h2 className="text-xl font-black uppercase tracking-tight text-slate-800 dark:text-white leading-none">{config.companyName}</h2>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">{config.companySlogan}</span>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+
+          {/* BARRE DE RECHERCHE GLOBALE CENTRALE */}
+          <div className="flex-1 max-w-xl mx-8 relative group hidden md:block">
+            <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-purple-600 transition-colors">
+              <Search size={18} />
+            </div>
+            <input 
+              type="text" 
+              value={globalSearchTerm}
+              onChange={(e) => setGlobalSearchTerm(e.target.value)}
+              placeholder="Recherche globale (Produit, Client, Action...)"
+              className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-[1.5rem] py-3.5 pl-14 pr-12 text-xs font-bold outline-none transition-all focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500"
+            />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center space-x-1 pointer-events-none opacity-40 group-focus-within:opacity-0 transition-opacity">
+               <div className="p-1 border border-slate-300 rounded text-[8px] font-black uppercase tracking-tighter">Ctrl</div>
+               <div className="p-1 border border-slate-300 rounded text-[8px] font-black uppercase tracking-tighter">K</div>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-4 shrink-0">
             <button onClick={toggleFullscreen} title="Plein écran" className="p-3 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl transition-all text-slate-500 hover:text-purple-600 shadow-sm"><Maximize size={20}/></button>
             <button onClick={() => setDarkMode(!darkMode)} title="Mode sombre/clair" className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl transition-colors text-slate-600 dark:text-slate-400 hover:text-purple-600">{darkMode ? <Sun size={20}/> : <Moon size={20}/>}</button>
             <div className="relative" ref={notifRef}>
